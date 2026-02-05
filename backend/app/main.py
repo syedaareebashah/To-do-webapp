@@ -21,7 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://to-do-webapp-chrb.vercel.app/",
+        "https://to-do-webapp-chrb.vercel.app",
         "http://localhost:3002",
         "http://localhost:3003",  # Frontend origin (fallback ports)
         "http://localhost:3004",

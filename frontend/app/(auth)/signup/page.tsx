@@ -21,7 +21,7 @@ export default function SignupForm() {
       await signup(email, password)
       router.push('/tasks')
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Signup failed. Please try again.')
+      setError(err.message || 'Signup failed. Please try again.')
     } finally {
       setIsLoading(false)
     }

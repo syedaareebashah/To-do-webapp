@@ -1,0 +1,58 @@
+{
+  "success_templates": {
+    "add_task_success": {
+      "template": "Added task: '{task_content}'",
+      "tone": "friendly"
+    },
+    "list_tasks_success": {
+      "template": "Here are your tasks: {task_list}",
+      "tone": "friendly"
+    },
+    "complete_task_success": {
+      "template": "Task {task_id} marked as complete",
+      "tone": "friendly"
+    },
+    "delete_task_success": {
+      "template": "Task {task_id} has been deleted",
+      "tone": "friendly"
+    },
+    "update_task_success": {
+      "template": "Task {task_id} has been updated",
+      "tone": "friendly"
+    }
+  },
+  "error_templates": {
+    "task_not_found_error": {
+      "template": "I couldn't find that task. Would you like to see your current tasks?",
+      "tone": "friendly"
+    },
+    "invalid_parameter_error": {
+      "template": "I had trouble understanding your request. {error_details}",
+      "tone": "friendly"
+    },
+    "tool_execution_error": {
+      "template": "Sorry, I couldn't complete that action. Please try again.",
+      "tone": "friendly"
+    }
+  },
+  "clarification_templates": {
+    "clarification_request": {
+      "template": "Could you clarify {aspect}? For example, which task would you like me to {action}?",
+      "tone": "friendly"
+    }
+  },
+  "general_templates": {
+    "welcome_message": {
+      "template": "Hello! I'm your Todo assistant. You can ask me to add, list, complete, update, or delete tasks. How can I help you today?",
+      "tone": "friendly"
+    },
+    "goodbye_message": {
+      "template": "Goodbye! Feel free to come back anytime you need help with your tasks.",
+      "tone": "friendly"
+    },
+    "help_message": {
+      "template": "I can help you manage your tasks. Here are some things you can ask me:\\n- Add a task: 'Add a task to buy groceries' or 'Create a task to call mom'\\n- List tasks: 'Show my tasks' or 'What do I have to do?'\\n- Complete a task: 'Complete task 1' or 'Mark task 2 as done'\\n- Delete a task: 'Delete task 3' or 'Remove task 4'\\n- Update a task: 'Update task 1 to new content' or 'Change priority of task 2 to high'",
+      "tone": "friendly"
+    }
+  }
+}

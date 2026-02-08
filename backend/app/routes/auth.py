@@ -67,11 +67,7 @@ async def signup(
     # Return response
     return AuthResponse(
         token=token,
-        user=UserPublic(
-            user_id=user.user_id,
-            email=user.email,
-            created_at=user.created_at
-        )
+        user=UserPublic.model_validate(user, from_attributes=True)
     )
 
 @router.post("/signin", response_model=AuthResponse)
@@ -120,11 +116,7 @@ async def signin(
     # Return response
     return AuthResponse(
         token=token,
-        user=UserPublic(
-            user_id=user.user_id,
-            email=user.email,
-            created_at=user.created_at
-        )
+        user=UserPublic.model_validate(user, from_attributes=True)
     )
 
 @router.get("/me", response_model=UserPublic)

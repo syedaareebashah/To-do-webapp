@@ -1,7 +1,15 @@
-# CLI-based Todo Application Requirements
+# Todo AI Chatbot System & MCP Requirements
 
-# This application uses only built-in Python libraries
-# No external dependencies required
-
-# Python version requirement
-python>=3.10
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlmodel==0.0.16
+asyncpg==0.29.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+better-exceptions==0.3.2
+python-multipart==0.0.6
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+alembic==1.13.1
+httpx==0.25.2
+openai==1.3.5

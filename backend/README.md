@@ -74,7 +74,7 @@ pytest
 ## Environment Variables
 
 - `DATABASE_URL` - PostgreSQL connection string
-- `BETTER_AUTH_SECRET` - Secret key for JWT signing (32+ characters)
+- `SECRET_KEY` - Secret key for JWT signing (32+ characters) - preferred; also supports `BETTER_AUTH_SECRET` as fallback
 - `JWT_EXPIRATION_HOURS` - Token expiration time (default: 1)
 
 ## Security Features

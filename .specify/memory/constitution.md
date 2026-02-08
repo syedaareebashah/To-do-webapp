@@ -1,172 +1,175 @@
 <!--
 Sync Impact Report:
-- Version: 1.0.0 (Initial constitution for Todo Full-Stack Web Application)
-- Modified principles: N/A (new constitution)
-- Added sections: All sections (initial creation)
-- Removed sections: N/A
-- Templates requiring updates: ⚠ pending (templates to be created)
-- Follow-up TODOs: Create plan-template.md, spec-template.md, tasks-template.md
+- Version change: 2.0.0 → 3.0.0
+- Modified principles: Replaced AI agent behavior principles with system architecture and MCP principles
+- Added sections: System architecture principles, MCP server behavior, API contracts, Data integrity
+- Removed sections: Previous AI agent behavior principles (Intent-First, Tool-First, etc.)
+- Templates requiring updates: ⚠ pending (templates need review for system-specific changes)
+- Follow-up TODOs: Update plan-template.md, spec-template.md, tasks-template.md for system-specific constraints
 -->
 
 # Project Constitution
 
-**Project Name:** Todo Full-Stack Web Application (Hackathon Phase 2)
+**Project Name:** Todo AI Chatbot — System & MCP Specification (Spec 2)
 
-**Version:** 1.0.0
-**Ratification Date:** 2026-02-03
-**Last Amended Date:** 2026-02-03
+**Version:** 3.0.0
+**Ratification Date:** 2026-02-06
+**Last Amended Date:** 2026-02-06
 
 ---
 
 ## Purpose
 
-This constitution establishes the foundational principles, standards, and constraints for the Todo Full-Stack Web Application project. It serves as the authoritative reference for all development decisions and ensures consistency across the entire development lifecycle.
+This constitution establishes the foundational principles, standards, and constraints for the backend system architecture, MCP server behavior, API contracts, data persistence, and stateless execution model in the Todo AI Chatbot project. It serves as the authoritative reference for all system operations and ensures consistency in how the system handles task management and conversation state.
 
 ---
 
 ## Core Principles
 
-### Principle 1: Spec-Driven Development
+### Principle 1: Stateless System Design
 
-**Statement:** All development MUST follow the spec → plan → tasks → implementation workflow. No code shall be written without a corresponding specification and implementation plan.
+**Statement:** The system MUST maintain no in-memory state across requests. All persistent state MUST be stored in the database and retrieved as needed for each operation.
 
-**Rationale:** Spec-driven development ensures that all features are properly designed, reviewed, and understood before implementation begins. This reduces rework, prevents scope creep, and maintains architectural consistency.
-
-**Requirements:**
-- Every feature MUST have a complete specification in `specs/<feature>/spec.md`
-- Every specification MUST have an architectural plan in `specs/<feature>/plan.md`
-- Every plan MUST be broken down into testable tasks in `specs/<feature>/tasks.md`
-- Implementation MUST NOT begin until spec, plan, and tasks are approved
-- All changes MUST be traceable back to a requirement in the spec
-
-### Principle 2: Security-First Architecture
-
-**Statement:** Security MUST be embedded at every layer of the application. JWT-based authentication and user isolation are mandatory for all API endpoints.
-
-**Rationale:** Security vulnerabilities can compromise user data and system integrity. By enforcing security at the architectural level, we prevent entire classes of vulnerabilities rather than patching individual issues.
+**Rationale:** Stateless design ensures reliability, scalability, and consistency across deployments. It prevents data loss from server restarts and ensures that the system behaves predictably regardless of server state.
 
 **Requirements:**
-- ALL API endpoints MUST require JWT authentication (no exceptions)
-- JWT verification MUST be stateless and middleware-based
-- User data MUST be isolated at the database layer (row-level security)
-- Task ownership MUST be enforced at both database and API layers
-- Shared secret (BETTER_AUTH_SECRET) MUST be stored in environment variables only
-- No credentials or secrets MUST ever be committed to version control
-- All authentication flows MUST use Better Auth with JWT plugin
+- Server MUST hold zero runtime state between requests
+- All conversation history MUST be fetched from the database for each request
+- All task state MUST be persisted in the database
+- Session data MUST be stored externally or in the database
+- System MUST be able to recover state completely after restart
 
-### Principle 3: Deterministic Behavior
+### Principle 2: Tool-Based Interaction
 
-**Statement:** The application MUST exhibit predictable, consistent behavior across all operations. API contracts MUST be explicit and strictly enforced.
+**Statement:** The AI agent MUST interact with the system exclusively via MCP tools. Direct database access or bypassing tools is strictly prohibited for task operations.
 
-**Rationale:** Deterministic systems are easier to test, debug, and reason about. Clear contracts prevent integration issues and reduce cognitive load for developers.
+**Rationale:** MCP tools provide standardized interfaces, logging, validation, and safety checks that direct operations cannot guarantee. This principle ensures consistency, auditability, and safety in all operations.
 
 **Requirements:**
-- All API endpoints MUST have explicit request/response schemas
-- Error responses MUST follow a consistent format with appropriate HTTP status codes
-- Database operations MUST be transactional where appropriate
-- State changes MUST be atomic and idempotent where possible
-- API behavior MUST be documented and tested
-- No implicit assumptions or "magic" behavior allowed
+- ALL task operations MUST use MCP tools only (no direct database access)
+- MCP server MUST act as the sole interface for task CRUD operations
+- Direct database access is forbidden during task execution
+- Tool usage MUST follow defined patterns and interfaces
+- Tool failures MUST be handled gracefully with proper error propagation
 
-### Principle 4: Zero Manual Coding
+### Principle 3: Clear Separation of Concerns
 
-**Statement:** All code MUST be generated through Claude Code and Spec-Kit Plus workflows. Manual code editing is prohibited except for configuration files.
+**Statement:** The system MUST maintain clear boundaries between API layer, MCP server, and database layer. Each component MUST have distinct responsibilities.
 
-**Rationale:** Automated code generation ensures consistency, reduces human error, and maintains traceability between specifications and implementation.
-
-**Requirements:**
-- All feature code MUST be generated via `/sp.implement` or equivalent commands
-- Manual edits MUST be limited to `.env`, configuration files, and documentation
-- All code changes MUST be traceable to a task in `tasks.md`
-- Code reviews MUST verify adherence to generated patterns
-- Deviations from generated code MUST be documented with justification
-
-### Principle 5: Decoupled Architecture
-
-**Statement:** Frontend and backend MUST be completely decoupled and communicate exclusively via REST API. No direct database access from frontend is permitted.
-
-**Rationale:** Decoupling enables independent development, testing, and deployment of frontend and backend. It also enforces security boundaries and enables future scalability.
+**Rationale:** Separation of concerns enables independent development, testing, and scaling of system components. It also improves maintainability and makes the system easier to reason about.
 
 **Requirements:**
-- Frontend MUST NOT have direct database access
-- All data exchange MUST occur through REST API endpoints
-- Frontend and backend MUST be deployable independently
-- API contracts MUST be versioned and backward compatible
-- Cross-origin requests MUST be properly configured with CORS
+- API layer handles HTTP requests/responses and authentication
+- MCP server handles task management logic and business rules
+- Database layer stores all persistent data
+- Each layer communicates only through well-defined interfaces
+- No direct dependencies between distant layers
+
+### Principle 4: Deterministic Behavior
+
+**Statement:** The system MUST produce the same outputs for identical inputs regardless of when or how many times the operation is performed.
+
+**Rationale:** Deterministic behavior ensures reliability and makes the system predictable for both users and developers. It also simplifies testing and debugging.
+
+**Requirements:**
+- Same inputs MUST produce the same outputs consistently
+- System behavior MUST be reproducible given identical conditions
+- Timestamps MUST be recorded consistently
+- No random or time-dependent behavior in core operations
+- Error handling MUST be consistent across all operations
+
+### Principle 5: Reliability and Data Integrity
+
+**Statement:** The system MUST maintain data integrity and provide reliable access to persistent data. All operations MUST be atomic and consistent.
+
+**Rationale:** Data integrity is fundamental to user trust and system reliability. Users need assurance that their tasks and conversations are safely stored and accessible.
+
+**Requirements:**
+- All database transactions MUST be atomic
+- Every task MUST be scoped by user_id
+- Every message MUST be linked to a conversation_id
+- Data consistency MUST be maintained across all operations
+- Backup and recovery procedures MUST be in place
 
 ---
 
 ## Technology Standards
 
-### Frontend Stack
+### Backend Architecture
 
-- **Framework:** Next.js 16+ (App Router only)
-- **Routing:** App Router (no Pages Router)
-- **Styling:** Tailwind CSS (or as specified in project)
-- **State Management:** React hooks and context (or as specified)
-- **Authentication:** Better Auth client integration
+- **Framework:** Python FastAPI (as specified in project)
+- **Database:** SQLModel for all database operations
+- **MCP Server:** Official MCP SDK only
+- **API Layer:** RESTful endpoints with proper HTTP semantics
+- **Authentication:** Per-user scoping with user_id
 
-### Backend Stack
+### API Design
 
-- **Framework:** Python FastAPI
-- **ORM:** SQLModel
-- **Database:** Neon Serverless PostgreSQL
-- **Authentication:** Better Auth with JWT plugin
-- **API Documentation:** OpenAPI/Swagger (auto-generated by FastAPI)
+- **Single Endpoint:** POST /api/{user_id}/chat for all chat operations
+- **Request/Response:** Strictly follow defined schemas
+- **Error Handling:** Consistent error response format
+- **Rate Limiting:** Proper throttling mechanisms
+- **Logging:** Comprehensive request/response logging
 
-### Development Tools
+### MCP Server Implementation
 
-- **Version Control:** Git
-- **Code Generation:** Claude Code + Spec-Kit Plus
-- **Environment Management:** `.env` files (never committed)
-- **Testing:** pytest (backend), Jest/React Testing Library (frontend)
+- **SDK:** Official MCP SDK only (no custom implementations)
+- **Tools:** Expose task operations as MCP tools only
+- **State:** MCP tools must be stateless (persist in database)
+- **Validation:** All inputs must be validated
+- **Security:** User isolation through user_id scoping
+
+### Database Design
+
+- **ORM:** SQLModel for all database access
+- **Entities:** Tasks, Conversations, Messages with proper relationships
+- **Indexing:** Proper indexes for performance
+- **Constraints:** Foreign key and uniqueness constraints
+- **Migration:** Proper schema evolution support
 
 ---
 
 ## Quality Requirements
 
-### API Standards
+### System Behavior Standards
 
-- REST endpoints MUST follow HTTP semantics:
-  - GET: Retrieve resources (idempotent, no side effects)
-  - POST: Create resources
-  - PUT/PATCH: Update resources
-  - DELETE: Remove resources
-- Status codes MUST be semantically correct:
-  - 200: Success
-  - 201: Created
-  - 400: Bad Request (client error)
-  - 401: Unauthorized (authentication required)
-  - 403: Forbidden (insufficient permissions)
-  - 404: Not Found
-  - 500: Internal Server Error
-- All endpoints MUST return consistent JSON response format
-- Error responses MUST include meaningful error messages
+- API responses MUST strictly follow the defined request/response schema
+- MCP tools MUST validate required parameters before processing
+- Error handling MUST be consistent across all operations
+- Response times MUST be reasonable (under 2 seconds for typical operations)
+- Tool contract enforcement MUST be strict and predictable
 
-### Code Quality
+### Data Integrity Requirements
 
-- Code MUST be generated through approved workflows
-- All functions MUST have clear, single responsibilities
-- Error handling MUST be explicit and comprehensive
-- No hardcoded values (use environment variables or configuration)
-- Code MUST be self-documenting with clear naming
+- All database access MUST be performed via SQLModel
+- Every task MUST be scoped by user_id with foreign key constraints
+- Every message MUST be linked to a conversation_id with foreign key constraints
+- Message roles MUST be explicitly stored as user or assistant
+- Timestamps MUST be recorded for all persistent entities with timezone awareness
 
-### Testing Requirements
+### API Quality Requirements
 
-- All API endpoints MUST have integration tests
-- Authentication flows MUST be tested end-to-end
-- Database operations MUST be tested with rollback
-- Frontend components MUST have unit tests for critical logic
-- Test coverage MUST be tracked and maintained
+- All endpoints MUST follow RESTful principles
+- HTTP status codes MUST be semantically correct
+- Request/response bodies MUST follow defined schemas
+- Authentication MUST be validated for all requests
+- Rate limiting MUST be implemented to prevent abuse
+
+### MCP Tool Quality Requirements
+
+- MCP tool names, parameters, and return values MUST match the specification exactly
+- Tools MUST validate required parameters before processing
+- Tools MUST return structured, predictable responses
+- Tools MUST handle errors gracefully with appropriate messages
+- Tool execution MUST be atomic and consistent
 
 ### Security Requirements
 
-- JWT tokens MUST have appropriate expiration times
-- Passwords MUST be hashed (never stored in plaintext)
-- SQL injection MUST be prevented (use parameterized queries via ORM)
-- XSS MUST be prevented (proper input sanitization and output encoding)
-- CSRF protection MUST be implemented where applicable
-- Rate limiting MUST be implemented on authentication endpoints
+- User data MUST be isolated by user_id
+- Authentication MUST be validated for all operations
+- Input validation MUST prevent injection attacks
+- No sensitive data MUST be logged
+- MCP tools MUST validate user permissions before operations
 
 ---
 
@@ -174,26 +177,35 @@ This constitution establishes the foundational principles, standards, and constr
 
 ### Mandatory Constraints
 
-1. **Authentication:** ALL API endpoints MUST require JWT authentication
-2. **User Isolation:** Task ownership MUST be enforced at database and API layers
-3. **No Direct DB Access:** Frontend MUST NOT access database directly
-4. **Stateless JWT:** JWT verification MUST be stateless and middleware-based
-5. **Environment Variables:** BETTER_AUTH_SECRET MUST be in environment variables only
+1. **Stateless Operation:** Server MUST hold zero runtime state between requests
+2. **Tool-Based Access:** ALL task operations MUST be exposed exclusively as MCP tools
+3. **Database Persistence:** MCP tools MUST persist all state in the database
+4. **API Contract:** API responses MUST follow the defined request/response schema
+5. **User Isolation:** Every task MUST be scoped by user_id with proper constraints
 
 ### Technology Constraints
 
-1. Frontend MUST use Next.js 16+ with App Router (no Pages Router)
-2. Backend MUST use Python FastAPI
-3. ORM MUST be SQLModel
-4. Database MUST be Neon Serverless PostgreSQL
-5. Authentication MUST use Better Auth with JWT plugin
+1. Backend MUST be implemented using Python FastAPI
+2. MCP server MUST use the Official MCP SDK only
+3. All database access MUST be performed via SQLModel
+4. Single chat endpoint: POST /api/{user_id}/chat
+5. MCP tools MUST be stateless and persist all state in the database
+
+### Architecture Constraints
+
+1. Chat endpoint MUST fetch conversation history from the database
+2. Chat endpoint MUST store incoming user messages
+3. Chat endpoint MUST execute the AI agent with MCP tools
+4. Chat endpoint MUST store assistant responses
+5. Chat endpoint MUST return response and tool call metadata
 
 ### Process Constraints
 
-1. All features MUST follow spec → plan → tasks → implementation
-2. No manual coding except configuration files
-3. All code MUST be generated via Claude Code + Spec-Kit Plus
-4. All changes MUST be traceable to specifications
+1. MCP server MUST act as the sole interface for task CRUD operations
+2. Database MUST be the single source of truth for tasks and conversations
+3. All task operations MUST be exposed exclusively as MCP tools
+4. Tools MUST validate required parameters before processing
+5. System behavior MUST be deterministic given identical inputs
 
 ---
 
@@ -201,11 +213,11 @@ This constitution establishes the foundational principles, standards, and constr
 
 ### Amendment Process
 
-1. Proposed amendments MUST be documented with rationale
-2. Amendments MUST be reviewed for impact on existing specifications
+1. Proposed amendments MUST be documented with rationale for system architecture changes
+2. Amendments MUST be reviewed for impact on existing system operations
 3. Version MUST be incremented according to semantic versioning:
-   - **MAJOR:** Backward-incompatible changes to principles or constraints
-   - **MINOR:** New principles or sections added
+   - **MAJOR:** Backward-incompatible changes to core principles or constraints
+   - **MINOR:** New principles or sections added for system behavior
    - **PATCH:** Clarifications, wording improvements, non-semantic changes
 4. `LAST_AMENDED_DATE` MUST be updated to current date
 5. Sync Impact Report MUST be generated and prepended as HTML comment
@@ -214,43 +226,43 @@ This constitution establishes the foundational principles, standards, and constr
 
 - Constitution version follows semantic versioning (MAJOR.MINOR.PATCH)
 - All dependent templates MUST be reviewed when constitution changes
-- Breaking changes MUST be communicated to all stakeholders
+- Breaking changes to system behavior MUST be communicated to stakeholders
 - Version history MUST be maintained in git commits
 
 ### Compliance Review
 
-- All specifications MUST reference this constitution
-- All architectural decisions MUST align with core principles
-- Code reviews MUST verify adherence to standards
-- Violations MUST be documented and justified or corrected
+- All system implementations MUST reference this constitution
+- All architectural decisions for system behavior MUST align with core principles
+- System operations MUST be verified for adherence to standards
+- Violations MUST be documented and corrected or justified
 
 ### Dependent Artifacts
 
 The following artifacts MUST remain consistent with this constitution:
 
-- `.specify/templates/plan-template.md` - Architecture planning template
-- `.specify/templates/spec-template.md` - Feature specification template
-- `.specify/templates/tasks-template.md` - Task breakdown template
-- `.specify/templates/commands/*.md` - Command definitions
+- `.specify/templates/plan-template.md` - System architecture planning template
+- `.specify/templates/spec-template.md` - System feature specification template
+- `.specify/templates/tasks-template.md` - System task breakdown template
+- `.specify/templates/commands/*.md` - System command definitions
 - `README.md` - Project documentation
-- All feature specifications in `specs/*/spec.md`
+- All system architecture specifications in `specs/*/spec.md`
 
 ---
 
 ## Success Criteria
 
-A feature is considered complete when:
+A system operation is considered successful when:
 
-1. ✅ Specification exists and is approved
-2. ✅ Architectural plan exists and is approved
-3. ✅ Tasks are defined with acceptance criteria
-4. ✅ All tasks are implemented and tested
-5. ✅ All tests pass
-6. ✅ Code adheres to all principles and standards
-7. ✅ Authentication and authorization are properly enforced
-8. ✅ API contracts are documented and tested
-9. ✅ No manual code edits outside approved scope
-10. ✅ Changes are traceable to requirements
+1. ✅ Same inputs produce the same outputs consistently
+2. ✅ MCP tools validate required parameters before processing
+3. ✅ All state is persisted in the database (no in-memory state)
+4. ✅ API responses follow the defined request/response schema
+5. ✅ User data is properly isolated by user_id
+6. ✅ All operations are atomic and maintain data integrity
+7. ✅ Error handling is consistent and appropriate
+8. ✅ System behavior follows all constitutional principles
+9. ✅ Performance meets defined requirements (response times under 2s)
+10. ✅ System behavior is consistent with written specifications
 
 ---
 

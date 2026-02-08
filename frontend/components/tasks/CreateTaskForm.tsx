@@ -5,7 +5,11 @@ import { useTasks } from '@/hooks/useTasks'
 import { Button } from '../ui/Button'
 import { Input, Textarea } from '../ui/Input'
 
-export function CreateTaskForm() {
+interface CreateTaskFormProps {
+  onTaskCreated?: () => void
+}
+
+export function CreateTaskForm({ onTaskCreated }: CreateTaskFormProps) {
   const { createTask } = useTasks()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -51,6 +55,11 @@ export function CreateTaskForm() {
       setDescription('')
       setPriority('medium')
       setDueDate('')
+
+      // Trigger callback if provided
+      if (onTaskCreated) {
+        onTaskCreated()
+      }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to create task')
     } finally {

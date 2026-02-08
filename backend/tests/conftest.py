@@ -9,6 +9,7 @@ from sqlmodel.pool import StaticPool
 
 # Set test environment variables
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only-minimum-32-chars"
 os.environ["BETTER_AUTH_SECRET"] = "test-secret-key-for-testing-only-minimum-32-chars"
 os.environ["JWT_EXPIRATION_HOURS"] = "1"
 

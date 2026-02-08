@@ -7,7 +7,7 @@ class SignupRequest(BaseModel):
     password: str = Field(..., min_length=8, description="User's password (min 8 characters)")
 
     class Config:
-        json_schema_extra = {
+        schema_extra = {
             "example": {
                 "email": "user@example.com",
                 "password": "SecurePass123"
@@ -20,7 +20,7 @@ class SigninRequest(BaseModel):
     password: str = Field(..., description="User's password")
 
     class Config:
-        json_schema_extra = {
+        schema_extra = {
             "example": {
                 "email": "user@example.com",
                 "password": "SecurePass123"
@@ -33,7 +33,7 @@ class AuthResponse(BaseModel):
     user: "UserPublic" = Field(..., description="User information")
 
     class Config:
-        json_schema_extra = {
+        schema_extra = {
             "example": {
                 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                 "user": {
@@ -46,4 +46,4 @@ class AuthResponse(BaseModel):
 
 # Import UserPublic to resolve forward reference
 from .user import UserPublic
-AuthResponse.model_rebuild()
+AuthResponse.update_forward_refs()

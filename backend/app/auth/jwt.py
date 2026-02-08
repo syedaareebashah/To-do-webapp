@@ -8,12 +8,12 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-SECRET_KEY = os.getenv("BETTER_AUTH_SECRET")
+SECRET_KEY = os.getenv("SECRET_KEY", os.getenv("BETTER_AUTH_SECRET"))
 ALGORITHM = "HS256"
 EXPIRATION_HOURS = int(os.getenv("JWT_EXPIRATION_HOURS", "1"))
 
 if not SECRET_KEY:
-    raise ValueError("BETTER_AUTH_SECRET environment variable is not set")
+    raise ValueError("SECRET_KEY environment variable is not set")
 
 def create_access_token(user_id: UUID, email: str) -> str:
     """

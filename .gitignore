@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Local configuration
+.env*
+.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.coversnap/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Alembic
+alembic/versions/*.py
+
+# Backend specific
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+
+# Frontend specific (if any)
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+
+# Deployment
+Procfile
+
+# Debug/intent files
+debug_intent.py
+todo_chatbot_agent.log
+*.tmp

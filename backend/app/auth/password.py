@@ -12,6 +12,7 @@ pwd_context = CryptContext(
 def hash_password(password: str) -> str:
     """
     Hash password using bcrypt with 12 rounds.
+    Truncate to 72 characters to avoid bcrypt limit.
 
     Args:
         password: Plain text password
@@ -19,6 +20,8 @@ def hash_password(password: str) -> str:
     Returns:
         str: Hashed password
     """
+    # Ensure max 72 chars for bcrypt
+    password = password[:72]
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

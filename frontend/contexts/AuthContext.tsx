@@ -25,41 +25,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is authenticated on mount
     const token = localStorage.getItem('auth_token')
     if (token) {
-      // Verify token by fetching current user
       apiClient.get('/auth/me')
-        .then(response => {
-          setUser(response.data)
-        })
-        .catch(() => {
-          localStorage.removeItem('auth_token')
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
+        .then(res => setUser(res.data))
+        .catch(() => localStorage.removeItem('auth_token'))
+        .finally(() => setIsLoading(false))
     } else {
       setIsLoading(false)
     }
   }, [])
 
   const signup = async (email: string, password: string) => {
-    const response = await apiClient.post('/auth/signup', { email, password })
-    const { token, user: userData } = response.data
-
-    // Store token
-    localStorage.setItem('auth_token', token)
-    setUser(userData)
+    try {
+      const response = await apiClient.post('/auth/signup', { email, password })
+      const { token, user: userData } = response.data
+      localStorage.setItem('auth_token', token)
+      setUser(userData)
+    } catch (err) {
+      console.error('Signup failed:', err)
+      throw new Error('Signup failed. Check email/password.')
+    }
   }
 
   const signin = async (email: string, password: string) => {
-    const response = await apiClient.post('/auth/signin', { email, password })
-    const { token, user: userData } = response.data
-
-    // Store token
-    localStorage.setItem('auth_token', token)
-    setUser(userData)
+    try {
+      const response = await apiClient.post('/auth/signin', { email, password })
+      const { token, user: userData } = response.data
+      localStorage.setItem('auth_token', token)
+      setUser(userData)
+    } catch (err) {
+      console.error('Signin failed:', err)
+      throw new Error('Signin failed. Check email/password.')
+    }
   }
 
   const logout = () => {
@@ -69,14 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        signup,
-        signin,
-        logout
-      }}
+      value={{ user, isAuthenticated: !!user, isLoading, signup, signin, logout }}
     >
       {children}
     </AuthContext.Provider>
@@ -85,8 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
+  if (!context) throw new Error('useAuth must be used within AuthProvider')
   return context
 }
